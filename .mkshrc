@@ -1,0 +1,105 @@
+
+
+# Intellectual property information START
+# 
+# Copyright (c) 2022 Ivan Bityutskiy 
+# 
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# 
+# Intellectual property information END
+
+# Description START
+#
+# Settings for the non-privileged shell (mksh).
+#
+# Description END
+
+# If non-interactive, don't process .mkshrc
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# Disallow messages from other users to the tty (security reasons)
+2> /dev/null /usr/bin/mesg 'n' || true
+
+# Editor for fc built-in
+FCEDIT='/usr/bin/vim'
+
+# Don't put lines starting with space in the history.
+HISTCONTROL='ignorespace'
+
+# Location of the history file
+HISTFILE="$HOME/.mksh_history"
+
+# Set the history size
+HISTSIZE=999
+
+set -o 'vi'
+set -o 'noclobber'
+set -o 'ignoreeof'
+
+# Set variables to contain special characters
+typeset chrEsc='\033'
+typeset strCSI='\033['
+# echo \! \? \$ \' \" \` \\ | od -bc
+typeset chrExc='\041'
+typeset chrQue='\077'
+typeset chrDol='\044'
+typeset chrSqu='\047'
+typeset chrDqu='\042'
+typeset chrBqu='\0140'
+typeset chrBsl='\0134'
+# print -u2 -- "${strCSI}38;2;11;124;76mHello ${strCSI}1mWorld${strCSI}22m${chrExc}${strCSI}0m"
+
+# Prompt
+PS1=$'\1\r\1\e[01;38;5;22m\1$PWD\1\e[0m\1:\1\e[01;38;5;28m\1\!\1\e[0m\1\$ '
+PS2=$'\1\r\1\e[38;5;166m\1>\1\e[0m '
+
+# Aliases
+# Faster than 'clear', but can scroll up afterwards.
+alias cls='print -n -u2 -- "\033[1;1H\033[0J"'
+alias l='less'
+alias m='more'
+alias h='history'
+alias jobs='jobs -l'
+alias j='jobs'
+alias ls='ls --color=auto -F'
+alias la='ls -A'
+alias lsd='ls -d */'
+alias ll='ls -lhA'
+alias dots='ls -FlhA $(find . -maxdepth 1 -type "f" -name ".*" | cut -c "3-")'
+# \033]0; - title, \033]1; -icon, \033]2; - title
+alias set_title='print -n -u2 -- "\033]0;${PWD}\07"'
+alias ..='cd ..'
+alias grep='grep --color=auto -i'
+alias du='du -sh'
+alias df='df -h'
+alias rmo='rm *_original'
+alias askrm='rm -i'
+alias askcp='cp -i'
+alias askmv='mv -i'
+alias psg='ps -ef | grep'
+alias psu='ps -u "$LOGNAME"'
+alias cnf='command-not-found --ignore-installed'
+alias mtt='~/Tools/fetchContent/fetchContentV3.ksh'
+alias wtr='~/Tools/getWeather/getWeather.sh'
+alias cred='~/Tools/getCred/getCred.sh'
+alias cdate='date -d "now + 3 months" "+%nThree months from today: %d.%m.%Y%n"'
+alias finfo='~/Tools/fileInfo/fileInfoSpecial.ksh'
+alias today="date '+%n%A %d %B %Y, %R:%S%n'"
+alias usd="curl -s 'https://www.cbr.ru/currency_base/daily/' | grep -A 10 'USD' | gawk -F '[<>]' 'BEGIN { print } NR ~ /[148]\$/ { print \$3 } END { printf ORS }'"
+alias sps1="PS1=$'\1\r\1\e[1;38;5;28m\1\!\1\e[0m\1\$ '"
+
+# vim:ft=sh
+
