@@ -1,0 +1,135 @@
+
+
+! Intellectual property information START
+! 
+! Copyright (c) 2022 Ivan Bityutskiy 
+! 
+! Permission to use, copy, modify, and distribute this software for any
+! purpose with or without fee is hereby granted, provided that the above
+! copyright notice and this permission notice appear in all copies.
+! 
+! THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+! WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+! MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+! ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+! WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+! ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+! OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+! 
+! Intellectual property information END
+!
+! Description START
+!
+! Settings for 'xterm' and 'urxvt'.
+!
+! Description END
+
+! Fonts
+Xft.autohint : 0
+Xft.lcdfilter : lcddefault
+Xft.hintstyle : hintslight
+Xft.hinting : 1
+Xft.antialias : 1
+Xft.rgba : rgb
+
+! With fixed font - use iso10646 for unicode characters
+! *font : -misc-fixed-medium-r-semicondensed-*-20-*-*-*-*-*-iso10646-1
+
+! ===== xterm
+XTerm*geometry: 125x30
+XTerm*background : #FFFFFF
+XTerm*foreground : #000000
+! XTerm*cursorColor : #000000
+! XTerm*colorUL : #366060
+! XTerm*underlineColor : #DFAF8F
+! XTerm*color0 : #3F3F3F
+! XTerm*color1 : #CC9393
+! XTerm*color2 : #7F9F7F
+! XTerm*color3 : #D0BF8F
+! XTerm*color4 : #6CA0A3
+! XTerm*color5 : #DC8CC3
+! XTerm*color6 : #93E0E3
+! XTerm*color7 : #DCDCCC
+! XTerm*color8 : #000000
+! XTerm*color9 : #DCA3A3
+! XTerm*color10 : #BFEBBF
+! XTerm*color11 : #F0DFAF
+! XTerm*color12 : #8CD0D3
+! XTerm*color13 : #DC8CC3
+! XTerm*color14 : #93E0E3
+! XTerm*color15 : #FFFFFF
+
+! Copy selection to CLIPBOARD buffer
+XTerm*selectToClipboard: true
+! Remove the additional black border
+XTerm*borderWidth : 0
+XTerm*internalBorder : 2
+! Set TERM environment variable to use 256 colors
+XTerm*termName : xterm-256color
+! Make alt key work normally
+XTerm*vt100.metaSendsEscape : true
+! Save ~10,000 lines of scrollback
+XTerm*v100.saveLines : 10240
+! Hide scrollbar
+XTerm*vt100.scrollBar : false
+! XTerm*vt100.rightScrollBar: true
+! Terminal bell tells the window manager to raise urgent flag
+XTerm*vt100.bellIsUrgent : true
+! Terminal font
+! XTerm*font: *-fixed-*-*-*-20-*
+! No (no bold fonts - just use brighter colors)
+XTerm*allowBoldFonts : true
+! TrueType
+XTerm*renderFont: true
+XTerm*faceName: Liberation Mono
+XTerm*faceSize: 16
+! Pressing a key automatically scrolls to the bottom
+XTerm*scrollKey : true
+! Dont allow terminal to go fullscreen
+XTerm*fullscreen : never
+! Clicking a line selects only from the current word forward
+XTerm*cutToBeginningOfLine : false
+! Dont include a trailing newline in the selection!
+XTerm*cutNewline : false
+! Make -A-Za-z0-9,./!?%&#$:;_=+@~ word delimiters
+XTerm*charClass : 33:48,35-39:48,42-47:48,58-59:48,61:48,63-64:48,126:48
+! Select word on two clicks
+XTerm*on2Clicks : word
+! Select whole line on three clicks
+XTerm*on3Clicks : line
+! Shift left click to open selection in web browser
+XTerm*VT100*Translations : #override Shift <Btn1Down> : exec-formatted("firefox-esr '%t'", CLIPBOARD)
+
+! XTerm*VT100*Translations : #override \n\
+!   Shift <Btn1Down> : exec-formatted("firefox-esr '%t'", CLIPBOARD) \n\
+!   Ctrl <Btn1Down> : exec-formatted("xsel -x")
+
+
+
+
+URxvt.font: xft:Liberation Mono:style=Regular:size=16
+URxvt.boldFont: xft:Liberation Mono:style=Bold:size=16
+URxvt.italicFont: xft:Liberation Mono:style=Italic:size=16
+URxvt.boldItalicFont: xft:Liberation Mono:style=Bold Italic:size=16
+URxvt.letterSpace: 0
+URxvt.lineSpace :0
+URxvt.depth: 24
+URxvt.foreground: #E6E6E6
+URxvt.background: #303030
+URxvt.cursorColor: #FABD2F
+URxvt.color1: #CC241D
+URxvt.color3: #D79921
+URxvt.color10: #689D6A
+URxvt.color12: #FB4934
+URxvt.perl-ext-common: default,tabbed
+URxvt.tabbed.tabbar-fg: 10
+URxvt.tabbed.tabbar-bg: 0
+URxvt.tabbed.tab-fg: 3
+URxvt.tabbed.tab-bg: 236
+URxvt.geometry: 126x31
+URxvt.scrollBar: false
+URxvt.saveLines: 10240
+URxvt.cutchars: "`\"'()*<>[\\]^{|}"
+URxvt.urgentOnBell: true
+! URxvt paste command: shift-insert
+
