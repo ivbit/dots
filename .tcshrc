@@ -1,0 +1,446 @@
+
+
+# Intellectual property information START
+# 
+# Copyright (c) 2022 Ivan Bityutskiy 
+# 
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# 
+# Intellectual property information END
+
+# Description START
+#
+# Settings for the non-privileged shell (tcsh).
+# Maximum length of variable's name is 20 characters,
+# [a-zA-Z0-9_], first char can't be a number.
+#
+# Description END
+
+if ( $?prompt ) then
+  # Disallow messages from other users to the tty (security reasons)
+  >& /dev/null /usr/bin/mesg 'n' || true
+
+  # Unset 'autologout' (it's being set automatically by login or root shells)
+  unset autologout
+
+  # Set key bindings
+  # emacs bindings
+  # bindkey -e
+  # Home
+  # bindkey "\e[1~" beginning-of-line
+  # Home rxvt
+  # bindkey "\e[7~" beginning-of-line
+  # Ins
+  # bindkey "\e[2~" overwrite-mode
+  # Delete
+  # bindkey "\e[3~" delete-char
+  # End
+  # bindkey "\e[4~" end-of-line
+  # End rxvt
+  # bindkey "\e[8~" end-of-line
+  # Vim key bindings
+  # bindkey -v will CANCEL all previous bindkey settings
+  bindkey -v
+  # Bindkey settings from above, if set AFTER 'bindkey -v' will CANCELL VI MODE
+  # 'bindkey -v' cancells those bindkey setting from above (bindkey "\e[1~" ...)
+  # 'tcsh' segfaults if while in 'vi mode', bindkey is used to
+  # set 'yank', 'i-search-back' or 'killring' is being set to '1':
+  # set killring = 1
+  # bindkey '^@' 'yank'
+  # bindkey -a '^@' 'yank'
+  # bindkey '^T' 'i-search-back'
+  # Any of the above cause 'tcsh 6.21.00' to segfault while using them.
+
+  # '\' will always quote \ ' " $
+  # (messes up backslash-escaped '\' and '\$' in history)
+  # set backslash_quote
+
+  # Display hours in 2-digit format (01:55 instead of 1:55)
+  set padhour
+  # Make completion (Tab) ignore case (Documents, documents)
+  set complete = 'igncase'
+  # '**' to match recursively, '***' goes through directory symlinks
+  set globstar
+
+  # Set echo style to both BSD and System V
+  set echo_style = 'both'
+
+  # Set variables to contain special characters
+  set chrEsc = '\033'
+  set strCSI = '\033['
+  # echo \! \? \$ \' \" \` \\ | od -bc
+  set chrExc = '\041'
+  set chrQue = '\077'
+  set chrDol = '\044'
+  set chrSqu = '\047'
+  set chrDqu = '\042'
+  set chrBqu = '\0140'
+  set chrBsl = '\0134'
+  # echo "${strCSI}38;2;11;124;76mHello ${strCSI}1mWorld${strCSI}22m${chrExc}${strCSI}0m"
+
+  # Prevent accidental damage to files my output redirection commands
+  set noclobber = 'notempty'
+  # Prevent accidental damage by 'rm *' command
+  set rmstar
+  # Disable logout with ^D
+  set ignoreeof
+
+  # Turn on immediate notification of job completion
+  # If this notification messed up the current command line
+  # while text being typed, press CTRL-R
+  set notify
+  # List jobs after CTRL-Z
+  set listjobs = 'long'
+
+  # Amount of last history commands to remember
+  set history = 999
+  # History file
+  set histfile = ${home}/.tcsh_history
+  # Save history to ~/.history
+  set savehist = ( $history 'merge' 'lock' )
+  # set savehist = ( $history 'merge' )
+  # Unique events in the history list (more inconvenient, than convenient)
+  # set histdup = 'all'
+  # Expand history
+  set autoexpand
+  
+  # Dirs file
+  set dirsfile = ${home}/.tcsh_dirs
+  # Save dirs into ~/.tcsh_dirs
+  set savedirs = 9
+  # Load dirs file
+  dirs -L
+
+  # Disable 'DING! at prompt
+  set noding
+  # Disable beep
+  set nobeep
+
+  # 'cd' without arguments will go to home directory
+  set cdtohome
+
+  # Set shortcuts for path completion. If there is ~/Documents/office/
+  # directory, then cd office, or pushd office will find ~/Documents/office
+  set cdpath = ( ~ ~/Documents ~/Practice )
+  # Make pushd to put only unique directories on the stack
+  set dunique
+  # Auto-completion (TAB key)
+  set autolist
+  # Maximum number of matches (otherwise ask the user)
+  set listmax = 200
+  set listmaxrows = 28
+  # Add / to folders, space to files when TAB key is pressed
+  set addsuffix
+  # Ignore files with these extensions when using file completion
+  set fignore = ( '.o' '.bak' '~')
+  # Spellcheck command errors (can be set to 'all')
+  set correct = 'cmd'
+
+  # Add colors to 'ls-F' builtin, adds '--color=auto' to 'ls'
+  # Colors are affected by '$LS_COLORS' environment variable
+  set color
+
+  # Set prompt
+  set promptchars = '$#'
+  # %S%s    - standout
+  # %B%b    - bold
+  # %U%u    - underline
+  # %!      - history number
+  # \!      - history number
+  # %h      - history number
+  # %/      - full path
+  # %~      - short path
+  # %#      - '>' for user '#' for root
+  # %?      - return status of previous command
+  # %%      - % sign
+  # %{...%} - CSI, example (set color):
+  # %{\033[38;5;22m%}...%{\033[0m%}
+  # set prompt = '%S[%D.%W.%y %P] %U%B%~ %h%b%#%u%s '
+  # set prompt = "%U%m%u:%B%~%b%# "
+  # set prompt = '%S[%D.%W %T] %B%~ %U%h%u%b%#%s '
+  set prompt = '[%{\033[38;5;22m%}%D.%W %T%{\033[0m%}] %{\033[1;38;5;22m%}%~%{\033[0m%} %{\033[1;38;5;28m%}%h%{\033[0m%}%# '
+  set prompt2 = '%{\033[38;5;166m%}%R?%{\033[0m%} '
+  set prompt3 = 'CORRECT>%{\033[38;5;124m%}%R%{\033[0m%} (y|n|e|a)? '
+  set rprompt = '[%{\033[38;5;28m%}%?%{\033[0m%}]'
+
+  # Aliases
+  # \!*   - all the arguments, by default they are put after the command in quotes
+  # \!*   - a short version of \!\!:*
+  # \!^   - first argument, short form of \!\!:^
+  # \!$   - last argument, short form of \!\!:$
+  # \!:2  - 2nd argument, short form of \!\!:2
+  # \!-1$ - last arg of previous command, short form of \!-1:$
+  alias fossil "${home}/bin/fossil"
+  # Faster than 'clear' program
+  alias clear 'echo -n "\033[3J\033[1;1H\033[0J"'
+  alias cls 'echo -n "\033[3J\033[1;1H\033[0J"'
+  alias ft 'filetest'
+  alias l 'less'
+  alias m 'more'
+  alias h 'history 25'
+  alias jobs 'jobs -l'
+  alias j 'jobs'
+  alias ls 'ls-F'
+  alias la 'ls -A'
+  alias lsd 'ls -d */'
+  alias ll 'ls -lhA'
+  alias lm 'll --color=always \!* | more'
+  alias dots 'ls -FlhA `find . -maxdepth 1 -type "f" -name ".*" | cut -c "3-"`'
+  # \033]0; - title, \033]1; -icon, \033]2; - title
+  alias put_title 'echo -n "\033]0;\!*\07"'
+  alias set_title 'echo -n "\033]0;${cwd}\07"'
+  set_title
+  alias cd 'cd -n \!*; set_title'
+  alias cdl 'cd \!*; ls'
+  alias .. 'cd ..'
+  alias / 'cd /'
+  alias - 'cd -'
+  alias pushd 'pushd -n \!*; set_title'
+  alias pd 'pushd'
+  alias popd 'popd -n \!*; set_title'
+  alias po 'popd'
+  alias dirs 'dirs -v'
+  alias grep 'grep --color=auto -i'
+  alias du 'du -sh'
+  alias ncdu 'ncdu --color off'
+  alias df 'df -h'
+  alias rmo 'rm *_original'
+  alias askrm 'rm -i'
+  alias askcp 'cp -i'
+  alias askmv 'mv -i'
+  alias psg 'ps -ef | grep \!^ | grep -v "grep"'
+  alias psu 'ps -u "$user"'
+  alias cnf 'command-not-found --ignore-installed'
+  alias mtt '~/Tools/fetchContent/fetchContentV4.ksh'
+  alias wtr '~/Tools/getWeather/getWeather.sh'
+  alias cred '~/Tools/getCred/getCred.sh'
+  alias cdate 'date -d "now + 3 months" "+%nThree months from today: %d.%m.%Y%n"'
+  alias ndate 'date -d "now + 150 minutes" "+%nNext 2.5 hours at %R%n"'
+  alias finfo '~/Tools/fileInfo/fileInfoSpecial.ksh'
+  alias today 'date "+%n%A %d %B %Y, %R:%S%n"'
+  alias usd "curl -s 'https://www.cbr.ru/currency_base/daily/' | grep -A 10 'USD' | gawk -F '[<>]' 'BEGIN { print } NR ~ /[148]"\$"/ { print "\$"3 } END { printf ORS }'"
+  # alias sps1 "set prompt = '%S%B%h%b%%%s '"
+  alias sps1 "set prompt = '%{\033[1;38;5;28m%}%h%{\033[0m%}%# '"
+  # alias lps1 "set prompt = '%S[%D.%W %T] %B%~ %U%h%u%b%#%s '"
+  alias lps1 "set prompt = '[%{\033[38;5;22m%}%D.%W %T%{\033[0m%}] %{\033[1;38;5;22m%}%~%{\033[0m%} %{\033[1;38;5;28m%}%h%{\033[0m%}%# '"
+  alias appletkill "kill `ps -u $user -o 'pid,cmd' | gawk '/.+[0-9] \/usr\/share\/system-config-printer\/applet.py/ {print "\$"1}'`"
+  alias cal 'ncal -b'
+  alias eqstr '~/Tools/eqStr/eqStr.tcl'
+  alias eqsum '~/Tools/eqStr/eqSum.tcl'
+
+  # Special aliases
+  # If script file is missing the '#!/bin/sh', use this shell to interpret it
+  alias shell '/bin/bash'
+
+  # Command autocompletions
+  # Autocomplete only the directory names for 'cd', 'cdl', 'pd', 'pushd'
+  # p - rule applies to a word in position
+  # 1 - number of the position
+  # d - only directory names
+  complete {cd,cdl,po,popd,pd,pushd} 'p/*/d/'
+  # Autocomplete no arguments for 'lsd'
+  complete lsd 'p/*/n/'
+  # Autocomplete 'ls'
+  complete ls 'c/--color=/(always auto never)/' 'c/--/(color=)//'
+
+  # Autocomplete 'if'
+  complete if \
+    'c/-/(b c C d D e f F g G G: I k l L M N o p P P: r s S t u U U: w x X z Z)/' \
+    'n/-X/c/'
+
+  # Autocomplete 'filetest'
+  complete {filetest,ft} \
+    'p/1/(-b -c -C: -d -e -f -G -G: -l -L -M: -N -o -p -P -r -s -U -U: -w -x -X -z -Z)/' \
+    'n/-X/c/'
+
+  # Autocomplete 'cp'
+  complete cp 'n/-R/d/' 'c/-/(R)/'
+
+  # Autocomplete 'mkdir'
+  complete mkdir 'c/-/(p)/'
+
+  # Autocomplete only the directory names for 'rmdir'
+  complete rmdir 'p/*/d/'
+
+  # Autocomplete 'ln': any letter - complete file name, no input - 1st arg is -s,
+  # 2nd arg is file name, 3rd ard is link name
+  complete ln 'C/?/f/' 'p/1/(-s)/' 'n/-s/f/' 'N/-s/n/' 'p/2/n/'
+
+  # Autocomplete 'chgrp'
+  complete chgrp 'p/1/g/'
+  # Autocomplete 'chmod'
+  complete chmod 'p/1/(700 600 -x +x)/'
+  # Autocomplete 'chown'
+  complete chown 'c/*:/g/' 'p/1/u/:/'
+
+  # Autocomplete 'limit' command to use resource limit names
+  complete {,un}limit 'c/-/(h)/' 'n/*/l/'
+
+  # Autocomplete 'cc', 'gcc' to use only .a, .c, .o
+  complete {,g}cc 'p/*/f:*.[cao]/'
+
+  # Autocomplete only the file names for 'dd' command
+  complete dd 'c/[io]f=/f/'
+
+  # Autocomplete 'man', 'where', 'whereis', 'which' command (c - command)
+  complete {man,where{,is},which} 'p/*/c/'
+
+  # Autocomplete for the 'env' command (1st:VAR=path_to_file 2nd:command)
+  complete env 'c/*=/f/' 'p/1/e/=/' 'p/2/c/'
+  # Autocomplete 'printenv' with environment variable names
+  complete printenv 'p/1/e/'
+  # Autocomplete 'setenv', 'unsetenv' with names of environment variables
+  complete {,un}setenv 'p/1/e/'
+
+  # Autocomplete 'alias', 'unalias' with alias names
+  complete {,un}alias 'p/1/a/'
+  # Autocomplete 'set', 'unset' with names of variables
+  complete set 'c/*=/f/' 'p/1/s/=/' 'n/=/f/'
+  complete unset 'p/*/s/'
+  # Autocomplete 'uncomplete' to use only completions
+  complete uncomplete 'p/*/X/'
+
+  # Autocomplete 'grep'
+  complete grep 'c/--color=/(always auto never)/' 'c/--/(color=)//' 'c/-/(A B c C e E i l L m o q r s v)/'
+
+  # Autocomplete 'sed'
+  complete sed 'c/-/(e E i n)/'
+
+  # Autocomplete 'uncompress.real' command with names ending only in .taz, .z, .Z
+  complete compress 'n/-d/f:*.{taz,z,Z}/' 'n/-dcf/f:*.{taz,z,Z}/'
+  complete {uncompress{,.real},znew} 'p/*/f:*.{taz,z,Z}/'
+  # Autocomplete 'gunzip' command with names endind only in .gz, .taz, .tgz, .z, .Z
+  complete gzip 'n/-d/f:*.{gz,taz,tgz,z,Z}/' 'n/-dcf/f:*.{gz,taz,tgz,z,Z}/'
+  complete {gunzip,z{cat,cmp,diff,{,e,f}grep,less,more}} 'p/*/f:*.{gz,taz,tgz,z,Z}/'
+  # Autocomplete 'bunzip2' command with .bz, .bz2, .tbz, .tbz2
+  complete bzip2 'n/-d/f:*.{bz,bz2,tbz,tbz2}/' 'n/-dcf/f:*.{bz,bz2,tbz,tbz2}/'
+  complete {bunzip2,bzip2recover,bz{cat,cmp,diff,{,e,f}grep,less,more}} 'p/*/f:*.{bz,bz2,tbz,tbz2}/'
+  # Autocomplete 'unxz' command with .lzma, .txz, .xz
+  complete xz 'n/-d/f:*.{lzma,txz,xz}/' 'n/-dcf/f:*.{lzma,txz,xz}/'
+  complete {unxz,xz{cat,cmp,diff,{,e,f}grep,less,more}} 'p/*/f:*.{lzma,txz,xz}/'
+  # Autocomplete 'unzip' command with .zip
+  complete {{,f}unzip,zip{cloak,details,grep,info,note,split}} 'p/*/f:*.zip/'
+  # Autocomplete 'unzstd' command with .tzst, .zst
+  complete zstd{,mt} 'n/-d/f:*.{tzst,zst}/' 'n/-dcf/f:*.{tzst,zst}/'
+  complete {unzstd,zstd{cat,grep,less}} 'p/*/f:*.{tzst,zst}/'
+  # Autocomplete 'tar' command
+  complete tar \
+    'p/1/(-cv -cvf -cvjf -cvJf -cvWf -cvzf -cvZf -rvf -rvWf -tv -tvf -tvjf -tvJf -tvzf -tvZf -xv -xvf -xvjf -xvJf -xvzf -xvZf)/' \
+    'n/-[ctx]v/(--zstd)/' 'n/--zstd/(-f)/' 'N/--zstd/f:*.{tzst,zst}/' 'n/-cv*f/n/' 'n/-rv*f/f:*.tar/' 'n/-[tx]vf/f:*.tar/' \
+    'n/-[tx]vjf/f:*.{bz,bz2,tbz,tbz2}/' 'n/-[tx]vJf/f:*.{lzma,txz,xz}/' 'n/-[tx]vzf/f:*.{gz,taz,tgz,z,Z}/' 'n/-[tx]vZf/f:*.{taz,z,Z}/' \
+    'c/--/(wildcards)/' 'p/*/f/'
+
+  # Autocomplete 'find' command's tests
+  # c     - rule applies to current word
+  # -     - current word
+  # n     - rule applies to next word
+  # -user - next word is after '-user'
+  # (...) - list of words to choose from
+  complete find \
+    'n/-cmin/n/' 'n/-ctime/n/' 'n/-delete/n/' 'n/-depth/n/' 'n/-exec{,dir}/c/' \
+    'n/-group/g/' 'n/-maxdepth/n/' 'n/-mindepth/n/' 'n/-mmin/n/' 'n/-mount/n/' \
+    'n/-mtime/n/' 'n/-name/f/' 'n/-newer/f/' 'n/-ok{,dir}/c/' 'n/-perm/(-o=w)/' \
+    'n/-print/n/' 'n/-prune/n/' 'n/-size/n/' 'n/-type/(b c d f l p s)/' 'n/-user/u/' \
+    'c/-/(cmin ctime delete depth exec execdir group maxdepth mindepth mmin mount \
+    mtime name newer ok okdir perm print prune size type user)/' 'p/*/d/'
+
+  # Autocomplete 'rsync' command
+  complete rsync \
+    'p/1/(-rvn)/' \
+    'c/--/(chmod=D700,F600 delete ignore-existing)/' \
+    'p/*/d/'
+
+  # Autocomplete 'mount'
+  complete mount 'c/--/(bind)/' \
+    'n/-t/(btrfs cifs devpts ext2 ext3 ext4 nfs ntfs-3g proc sysfs tmpfs vfat xfs)/' \
+    'c/*,/(defaults dmask=000 errors=remount-ro fmask=111 noatime nodev noexec nosuid ro)//' \
+    'n/-o/(defaults dmask=000 errors=remount-ro fmask=111 noatime nodev noexec nosuid ro)//' \
+    'c/-/(o r t v)/'
+
+  # Autocomplete 'umount'
+  complete umount 'p/*/`mount | cut -d " " -f 3`/'
+
+  # Autocomplete 'tcsh'
+  complete tcsh 'c/-/(b c l s t)/' 'p/*/f:*.{,t}csh/'
+
+  # Autocomplete 'dash'
+  complete {,a,da}sh 'c/-/(c l)/' 'p/*/f:*.sh/'
+
+  # Autocomplete 'bash'
+  complete bash 'c/-/(c l)/' 'p/*/f:*.{,ba}sh/'
+
+  # Autocomplete 'ksh', 'mksh'
+  complete {k,mk}sh 'c/-/(c l)/' 'p/*/f:*.{,m}ksh/'
+
+  # Autocomplete urls for web browsers
+  complete {chromium,firefox{,-esr},hv3,links{,2},lynx,surf,vimb,w3m} \
+    'p_1_(https://www.)__'
+
+  # Autocomplete 'kchmviewer'
+  complete kchmviewer 'p/*/f:*.{chm,epub}/'
+
+  # Autocomplete 'djview', 'qpdfview'
+  complete {djview{,4},qpdfview} 'p/*/f:*.djvu/'
+
+  # Autocomplete 'mupdf', 'qpdf'
+  complete {mu,q}pdf 'p/*/f:*.pdf/'
+
+  # Autocomplete 'exiftool' with metadata deletion 1st parameter, 2nd is the file name
+  complete exiftool 'c/-/(all:all=)/' 'p/*/f/'
+
+  # Autocomplete 'mat2' with metadata deletion/check 1st parameter, 2nd is the file name
+  complete mat2 'c/-/(-inplace s)/' 'p/*/f/'
+
+  # Autocomplete 'git'
+  complete git \
+    'p/1/(add branch checkout clone commit diff fetch grep init log merge pull push remote reset status)/' \
+    'c/--/(rebase)/' 'n/remote/(add)/' 'n/fetch/(origin)/' 'n/pu{ll,sh}/(origin)/' 'n/origin/(main master)/'
+
+  # Autocomplete 'vim' without core dumps, .o, .a
+  complete vi{,m} 'p/*/f:^{{,*.}core,*.[oa]}/'
+
+  # Autocomplete 'perl -S' to look for program in PATH
+  complete perl 'n/-S/c/'
+
+  # Autocomplete 'exec' command
+  complete exec 'p/1/c/'
+
+  # Autocomplete 'su' command
+  complete su \
+    'c/*,/e//' \
+    'c/--command=/c/' 'c/--group=/g/' 'c_--shell=_`grep -v "#" /etc/shells`_' 'c/--whitelist-environment=/e//' \
+    'n/-c/c/' 'n/-g/g/' 'n_-s_`grep -v "#" /etc/shells`_' 'n/-w/e//' \
+    'c/--/(command group login preserve-environment shell whitelist-environment)//' \
+    'c/-/(- c g l m s w)/' \
+    'n/*/u/'
+
+  # Autocomplete 'cnf' alias
+  complete cnf 'p/*/c/'
+
+  # Autocomplete jobs
+  complete -%* 'c/%/j/'
+  complete {bg,fg,stop} 'c/%/j/' 'p/1/(%)//'
+
+  # Autocomplete 'kill' command to use signal names
+  complete kill 'c/%/j/' 'c/-/S/' 'p/1/(-)//'
+
+  # Autocomplete 'killall' command
+  complete killall 'c/-/S/' 'p/*/c/'
+
+  # Autocomplete 'apt'
+  complete apt 'n/list/(--installed)/' 'p/1/(install list remove purge search show update upgrade)/'
+
+endif
+
+# vim:ft=tcsh
+
