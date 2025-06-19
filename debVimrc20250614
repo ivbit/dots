@@ -1,0 +1,411 @@
+" Copyright (c) 2023 Ivan Bityutskiy 
+"
+" Permission to use, copy, modify, and distribute this software for any
+" purpose with or without fee is hereby granted, provided that the above
+" copyright notice and this permission notice appear in all copies.
+"
+" THE SOFTWARE IS PROVIDED 'AS IS' AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+" normal mode commands for file type .vim:
+" zM - folds all markers
+" zR - unfolds all markers
+" za - while inside maker, folds/unfolds curren marker
+" zd - remove fold under the cursor (also deletes marker characters)
+" zE - remove all folds in a current buffer (also deletes marker characters)
+
+" user settings
+
+" allow features not present in vi
+set nocompatible
+
+" milliseconds to wait for next key in a sequence
+set ttimeoutlen=50
+
+" set spacebar to be the leader key in normal mode
+noremap <silent> <Space> <Nop>
+let mapleader = "\<Space>"
+
+" the terminal has 256 colors
+set t_Co=256
+
+" disable bell
+set noerrorbells
+
+" disable visual bell
+set novisualbell
+
+" light colorscheme that's easy on eyes {{{
+colorscheme ivanb
+
+if &diff
+  colorscheme ivanb
+endif
+" }}}
+
+" allow switching beetween buffers without saving first
+set hidden
+
+" set undo, swap, backup directories {{{
+let s:my_home_dir = expand('$HOME')
+if has('win32')
+  if !isdirectory(s:my_home_dir . '\vimfiles\undodir')
+    call mkdir(s:my_home_dir . '\vimfiles\undodir', "p")
+  endif
+  let &undofile = 1
+  let &undodir = s:my_home_dir . '\vimfiles\undodir//'
+
+  if !isdirectory(s:my_home_dir . '\vimfiles\swap')
+    call mkdir(s:my_home_dir . '\vimfiles\swap', "p")
+  endif
+  let &directory = s:my_home_dir . '\vimfiles\swap//'
+
+  if !isdirectory(s:my_home_dir . '\vimfiles\backupdir')
+    call mkdir(s:my_home_dir . '\vimfiles\backupdir', "p")
+  endif
+  let &backupdir = s:my_home_dir . '\vimfiles\backupdir//'
+else
+  if !isdirectory(s:my_home_dir . '/.vim/undodir')
+    call mkdir(s:my_home_dir . '/.vim/undodir', "p")
+  endif
+  let &undofile = 1
+  let &undodir = s:my_home_dir . '/.vim/undodir//'
+
+  if !isdirectory(s:my_home_dir . '/.vim/swap')
+    call mkdir(s:my_home_dir . '/.vim/swap', "p")
+  endif
+  let &directory = s:my_home_dir . '/.vim/swap//'
+
+  if !isdirectory(s:my_home_dir . '/.vim/backupdir')
+    call mkdir(s:my_home_dir . '/.vim/backupdir', "p")
+  endif
+  let &backupdir = s:my_home_dir . '/.vim/backupdir//'
+endif
+" }}}
+
+" save backups of files in backupdir
+set writebackup
+set backup
+" make vim work with the 'crontab -e' command
+set backupskip+=/var/spool/cron/*
+" skip backup for 'netrwhist' file
+let &backupskip = &backupskip . ',' . expand('~/.vim/.netrwhist')
+" use swapfile
+set swapfile
+" use undofile
+set undofile
+
+" in Terminal position the cursor, Visually select, scroll with the mouse. {{{
+" only xterm, (and st) can grab the mouse events when using the shift key, for
+" other terminals use ':', select text and press Esc.
+if has('mouse')
+  if &term =~? '\v[xs]t.*'
+    set mouse=a
+  else
+    set mouse=nvi
+  endif
+endif
+" }}}
+
+" switch off blinking of the cursor:
+let &guicursor = "a:blinkon0"
+
+" language and font settings {{{
+set encoding=utf-8
+" to make vim understand UTF-16 LE and such; utf-16 is UTF-16 BE
+" if working with BOMless UTF 16 files, move utf-16le or utf-16 before ucs-bom
+" set fileencodings=ucs-bom,utf-16le,utf-16,utf-8,default,latin1,cp1251
+
+" english Menu and UI
+set langmenu=en_US.UTF-8
+language en_US.UTF-8
+
+if has("gui_running")
+  " set guifont=Liberation_Mono:h16:cRUSSIAN:qDRAFT
+  " set guifont=Monospace\ 16
+  set guifont=Liberation\ Mono\ 16
+  " remove menu and scrollbars from gui
+  " set guioptions-=mrL
+  " set guioptions=aegiT
+  set guioptions=aegi
+  " gvim window size
+  set lines=30
+  set columns=88
+  if has('win32')
+    set guifont=Liberation_Mono:h16:cRUSSIAN:qDRAFT
+    " remove tearoff menu in windows gui
+    " set guioptions-=t
+    " set guioptions=egT
+    set guioptions=eg
+  endif
+endif
+
+" spell checking languages
+set spelllang=en,ru
+" }}}
+
+" syntax
+filetype plugin indent on
+" syntax on
+syntax enable
+
+" confirm closing unsaved files
+set confirm
+
+" matchit makes % normal command work better
+packadd! matchit
+
+" indentation and spacing {{{
+" remember indentation for new line
+set autoindent
+" replace tabs with spaces
+set expandtab
+" 1 tab == 2 spaces
+set tabstop=2
+" 2 spaces for autoindent
+set shiftwidth=2
+" delete 2 spaces in indent with single backspace
+set softtabstop=2
+" the lenght of strings in letters
+" set textwidth=132
+set textwidth=140
+" }}}
+
+" fix backspace on most terminals
+set backspace=indent,eol,start
+
+" quality-of-life improvements to Vim: {{{
+" disable bell
+set belloff=all
+" verbose cscope output
+set cscopeverbose
+" C-N in insert mode for autocompletion
+set complete-=i
+" commands history
+set history=999
+" C-A, C-X to increment/decrement numbers
+set nrformats-=octal
+" do not carry options between sessions
+set sessionoptions-=options
+" avoid Hit-Enter prompts
+set shortmess=atI
+" fast tty connection
+set ttyfast
+" do not redraw screen when using macros, registers, etc.
+" tremendously increase performance of macro commands
+set lazyredraw
+" }}}
+
+" load all plugins
+" packloadall
+" load help files for all plugins
+" silent! helptags ALL
+
+" folding options {{{
+set foldenable
+" fold based on indentation in code
+set foldmethod=indent
+set foldignore=
+" visualize folds
+set foldcolumn=1
+" limit the amount of nested folds
+set foldnestmax=10
+" open 10 levels of nested folds when file is read into a buffer
+set foldlevelstart=99
+" }}}
+
+" enable enhanced tab autocompletion
+set wildmenu
+set wildmode=list:longest,full
+
+" line numbers
+set number
+set relativenumber
+
+" search settings
+set hlsearch
+set incsearch
+" set ignorecase
+
+" info at the bottom
+set ruler
+" pretty word-wrap
+set linebreak
+" pretty long lines
+set display+=lastline
+
+" custom commands {{{
+
+" function to load the template for current file type, if it exists.
+" 'abort' causes a function to exit on 1st error, otherwise the function
+" will continue to execute the code after an error being encountered.
+function! s:MyLoadVimTemplate() abort
+  let l:templateFile = expand("~/Additional/templatesVim/") . &filetype . ".txt"
+  if filereadable(l:templateFile)
+    execute "0r " . l:templateFile
+    execute "normal! zR"
+  endif
+endfunction
+
+nnoremap <silent> <Leader>tt :<C-U>call <SID>MyLoadVimTemplate()<C-M>
+
+" difference between current buffer and original file
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis | wincmd p | diffthis
+endif
+
+" clear all registers
+command! ClearRegisters for ltr in range(34, 122) | silent! call setreg(nr2char(ltr), []) | endfor
+" }}}
+
+" augroup my_vimrc {{{
+augroup my_vimrc
+  " clear previous autocmd commands
+  autocmd!
+
+  " unfold markers after opening a file:
+  autocmd BufRead * normal! zR
+
+  " when opening a document, return to the last cursor position
+  autocmd BufReadPost *
+    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+    \   execute "normal! g`\"" |
+    \ endif
+
+  " don't write swapfile on most commonly used directories for NFS mounts or USB sticks
+  autocmd BufNewFile,BufReadPre /media/*,/run/media/*,/mnt/* set directory=~/tmp,/var/tmp,/tmp
+augroup END
+" }}}
+
+" don't show relative numbers in Insert mode {{{
+augroup insert_relative_nums
+  autocmd!
+  autocmd InsertEnter * setlocal norelativenumber
+  autocmd InsertLeave * setlocal relativenumber
+augroup END
+" }}}
+
+" c file settings {{{
+augroup filetype_c
+  autocmd!
+  autocmd FileType c setlocal foldignore=#
+augroup END
+" }}}
+
+" python file settings {{{
+augroup filetype_python
+  autocmd!
+  autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4
+augroup END
+" }}}
+
+" rust file settings {{{
+augroup filetype_rust
+  autocmd!
+  autocmd FileType rust setlocal tabstop=4 shiftwidth=4 softtabstop=4
+augroup END
+" }}}
+
+" vimscript file settings {{{
+augroup filetype_vim
+  autocmd!
+  autocmd FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
+
+" remaps {{{
+" repeat the last substitute with options
+nnoremap <silent> & :&&<C-M>
+xnoremap <silent> & :&&<C-M>
+
+" c18 multi-line comments
+nnoremap <silent> <Leader>m a/*  */<Left><Left><Left>
+
+" m4 utf-8 quotes
+set matchpairs+=☾:☽
+nnoremap <silent> <Leader>q Adivert(`-1')<C-M>changequote(`☾', `☽')<C-M>
+nnoremap <silent> <Leader>b a☾☽<Left>
+nnoremap <silent> <Leader>B a☾☾☽☽<Left><Left>
+nnoremap <silent> <Leader>d Adivert(☾0☽)dnl<C-M>
+nnoremap <silent> <Leader>D Adivert(☾-1☽)<C-M>
+inoremap <silent> <C-B> ☾
+inoremap <silent> <C-S> ☽
+inoreabbrev <silent> dfn1_ define(☾%☽, ☾;☽)<C-[>F%s<C-O>:call getchar()<C-M>
+inoreabbrev <silent> dfn2_ define(☾%☽, ☾☾;☽☽)<C-[>F%s<C-O>:call getchar()<C-M>
+inoreabbrev <silent> ife1_ ifelse(☾%☽, ☾;☽, ☾;☽, ☾;☽)<C-[>F%s<C-O>:call getchar()<C-M>
+inoreabbrev <silent> ife2_ ifelse(☾%☽, ☾;☽, ☾☾;☽☽, ☾;☽)<C-[>F%s<C-O>:call getchar()<C-M>
+
+" search visually selected text with * #
+function! s:VisSrch(cmdtype) abort
+  let l:temp = @s
+  normal! gv"sy
+  let @/ = '\V' . substitute(escape(@s, a:cmdtype.'\'), '\n', '\\n', 'g')
+  let @s = l:temp
+endfunction
+
+xnoremap <silent> * :<C-U>call <SID>VisSrch('/')<C-M>/<C-R>=@/<C-M><C-M>
+xnoremap <silent> # :<C-U>call <SID>VisSrch('?')<C-M>?<C-R>=@/<C-M><C-M>
+
+" traverse Vim's lists
+nnoremap <silent> [b :bprevious<C-M>
+nnoremap <silent> ]b :bnext<C-M>
+nnoremap <silent> [B :bfirst<C-M>
+nnoremap <silent> ]B :blast<C-M>
+
+" show whitespace characters
+set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,nbsp:+
+nnoremap <silent> <F5> :set list!<C-M>
+inoremap <silent> <F5> <C-O>:set list!<C-M>
+cnoremap <silent> <F5> <C-C>:set list!<C-M>
+
+" open/close Lex file explorer
+nnoremap <silent> <F6> :<C-U>Lex<C-M>2j:vertical resize 18<C-M>
+inoremap <silent> <F6> <C-[>:<C-U>Lex<C-M>2j:vertical resize 18<C-M>
+cnoremap <silent> <F6> <C-[>:<C-U>Lex<C-M>2j:vertical resize 18<C-M>
+
+" toggle highlighting of color column
+function! s:CColToggle() abort
+  if &colorcolumn
+    let &colorcolumn = 0
+  else
+    let &colorcolumn = 80
+  endif
+endfunction
+nnoremap <silent> <F7> :<C-U>call <SID>CColToggle()<C-M>
+inoremap <silent> <F7> <C-O>:<C-U>call <SID>CColToggle()<C-M>
+cnoremap <silent> <F7> <C-O>:<C-U>call <SID>CColToggle()<C-M>
+
+" toggle highlighting of cursor line
+function! s:ClToggle() abort
+  if &cursorline
+    let &cursorline = 0
+  else
+    let &cursorline = 1
+  endif
+endfunction
+nnoremap <silent> <Leader>h :<C-U>call <SID>ClToggle()<C-M>
+
+" reverse highlighted text
+vnoremap <silent> <Leader>r c<C-O>:set revins<C-M><C-R>"<C-[>:set norevins<C-M>
+" }}}
+
+" insert mode remaps: {{{
+
+" Alt-Space to move one letter to the right in insert mode
+inoremap <silent> <M-Space> <C-[>la
+" Ctrl-D-Ctrl-D to insert current date
+inoremap <silent> <C-D><C-D> <C-R>=strftime("%d.%m.%Y")<C-M>
+" Ctrl-T-Ctrl-T to insert current time
+inoremap <silent> <C-T><C-T> <C-R>=strftime("%H:%M")<C-M>
+" Ctrl-D-Ctrl-T to insert current date and time
+inoremap <silent> <C-D><C-T> <C-R>=strftime("%Y-%m-%dT%T")<C-M>
+" be able to undo Ctrl-U in insert mode
+inoremap <silent> <C-U> <C-G>u<C-U>
+" }}}
+
+
