@@ -1,0 +1,13 @@
+
+/usr/local/share/fonts/truetype/
+/usr/share/vim/vim91/spell/
+/usr/lib/cups/filter/pt2500Filter
+/etc/X11/xorg.conf.d/20-intel.conf
+
+Don't use 20-intel.conf if there
+is no screen tearing.
+20-intel.conf can cause severe
+performace issues. In that case
+it must be deleted from
+/etc/X11/xorg.conf.d/
+
